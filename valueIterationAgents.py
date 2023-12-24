@@ -63,6 +63,21 @@ class ValueIterationAgent(ValueEstimationAgent):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
 
+        # Initialize state´s values to 0
+        for state in self.mdp.getStates():
+            self.values[state] = 0.0
+
+        i = 0
+        while i < self.iterations:
+            old_values = self.values.copy() # Save the old state values
+            for state in self.mdp.getStates():
+                state_values = util.Counter() # Values for actions of current state
+                for action in self.mdp.getPossibleActions(state):
+                    state_values[action] = self.getQValue(state, action)
+                old_values[state] = state_values[state_values.argMax()]  # Update values for each state
+            self.values = old_values.copy() # Recover the values
+            i +=+ 1
+
 
     def getValue(self, state):
         """
@@ -70,15 +85,22 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         return self.values[state]
 
-
     def computeQValueFromValues(self, state, action):
         """
           Compute the Q-value of action in state from the
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        transitions = self.mdp.getTransitionStatesAndProbs(state, action) # Get probability of transitions
+        QVls = 0.0
 
+        for transition in transitions: # Iterate the possible transitions
+            toState, prob = transition
+            QVls += prob * (self.mdp.getReward(state, action, toState) + self. discount * self.getValue(toState)) # Apply equation
+
+        return QVls
+    
     def computeActionFromValues(self, state):
         """
           The policy is the best action in the given state
@@ -89,7 +111,16 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        if (self.mdp.isTerminal(state)): 
+            return None # In case of terminal state returns None
+        else:
+            QVls = util.Counter()
+            actions = self.mdp.getPossibleActions(state)
+            for action in actions:
+                QVls[action] = self.computeQValueFromValues(state, action)
+
+            return QVls.argMax()
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
