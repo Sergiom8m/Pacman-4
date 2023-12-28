@@ -76,7 +76,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                     state_values[action] = self.getQValue(state, action)
                 old_values[state] = state_values[state_values.argMax()]  # Update values for each state
             self.values = old_values.copy() # Recover the values
-            i +=+ 1
+            i += 1
 
 
     def getValue(self, state):

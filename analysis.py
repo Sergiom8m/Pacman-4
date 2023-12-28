@@ -22,7 +22,7 @@
 def question2():
     answerDiscount = 0.9
     answerNoise = 0.001
-    return answerDiscount, answerNoise
+    return answerDiscount, answerNoise 
 
 if __name__ == '__main__':
     print('Answers to analysis questions:')
