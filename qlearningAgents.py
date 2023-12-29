@@ -66,13 +66,14 @@ class QLearningAgent(ReinforcementAgent):
           terminal state, you should return a value of 0.0.
         """
         "*** YOUR CODE HERE ***"
-        qvalues = []
-        for action in self.getLegalActions(state):
-            qvalues.append(self.getQValue(state,action)) 
-        if len(qvalues) == 0:
+        legalActions = self.getLegalActions(state)
+        if len(legalActions) == 0:
             return 0.0
         else:
-            return max(qvalues)
+            actions = []
+            for action in legalActions:
+                actions.append(self.getQValue(state,action))
+            return max(actions)
             
 
     def computeActionFromQValues(self, state):
@@ -82,15 +83,15 @@ class QLearningAgent(ReinforcementAgent):
           you should return None.
         """
         "*** YOUR CODE HERE ***"
-        best_value = self.getValue(state) #get best value of the state
-        best_actions = [] 
-        for action in self.getLegalActions(state):
-            if self.getQValue(state,action) == best_value: # Find the best QVls of the state
-                best_actions.append(action)
-      
-        if len(best_actions) == 0: # # In case of terminal state returns None
+        legalActions = self.getLegalActions(state)
+        if len(legalActions) == 0:
             return None
         else:
+            best_value = self.getValue(state) #get best value of the state
+            best_actions = [] 
+            for action in self.getLegalActions(state):
+                if self.getQValue(state,action) == best_value: #search the best qvalues of the state
+                    best_actions.append(action)
             return random.choice(best_actions)
 
 
@@ -110,8 +111,9 @@ class QLearningAgent(ReinforcementAgent):
         action = None
 
         "*** YOUR CODE HERE ***"
-
-        if util.flipCoin(self.epsilon): # Use epsilon probability to decide explore/explote
+        if len(legalActions) == 0:
+            action = None
+        elif util.flipCoin(self.epsilon): # Use epsilon probability to decide explore/explote
             action = random.choice(legalActions) # Explore
         else:
             action = self.getPolicy(state) # Explote
